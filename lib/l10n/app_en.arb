@@ -1,0 +1,33 @@
+{
+  "@@locale": "en",
+  "appTitle": "Health Universe",
+  "journalTitle": "Personal health journal",
+  "privacyNotice": "Your entries are stored locally on this device. Not for diagnosis or emergency use.",
+  "measurement": "Measurement",
+  "value": "Value ({unit})",
+  "saveMeasurement": "Save measurement",
+  "history": "History ({count})",
+  "emptyHistory": "No measurements yet. Add your first entry above.",
+  "invalidValue": "Enter a positive number.",
+  "deleteEntry": "Delete entry",
+  "weight": "Weight",
+  "heartRate": "Heart rate",
+  "systolic": "Systolic pressure",
+  "diastolic": "Diastolic pressure",
+  "water": "Water",
+  "sleep": "Sleep",
+  "@value": {
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "@history": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}
