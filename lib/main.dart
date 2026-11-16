@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:health_universe/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(const HealthUniverseApp());
@@ -73,7 +75,9 @@ class HealthUniverseApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-    title: 'Health Universe',
+    onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
     debugShowCheckedModeBanner: false,
     theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF087E83)), useMaterial3: true),
     home: const HealthHome(),
@@ -118,10 +122,23 @@ class _HealthHomeState extends State<HealthHome> {
     super.dispose();
   }
 
+  String _metricLabel(BuildContext context, String key) {
+    final l = AppLocalizations.of(context)!;
+    return switch (key) {
+      'Weight' => l.weight,
+      'Heart rate' => l.heartRate,
+      'Systolic pressure' => l.systolic,
+      'Diastolic pressure' => l.diastolic,
+      'Water' => l.water,
+      'Sleep' => l.sleep,
+      _ => key,
+    };
+  }
+
   Future<void> _save() async {
     final value = double.tryParse(controller.text.trim().replaceAll(',', '.'));
     if (value == null || !value.isFinite || value <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter a positive number.')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.invalidValue)));
       return;
     }
     await journal.add(metric, value, metrics[metric]!);
@@ -132,16 +149,16 @@ class _HealthHomeState extends State<HealthHome> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Health Universe')),
+    appBar: AppBar(title: Text(AppLocalizations.of(context)!.appTitle)),
     body: ListView(padding: const EdgeInsets.all(16), children: [
-      const Text('Personal health journal', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+      Text(AppLocalizations.of(context)!.journalTitle, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
       const SizedBox(height: 8),
-      const Text('Your entries are stored locally on this device. Not for diagnosis or emergency use.'),
+      Text(AppLocalizations.of(context)!.privacyNotice),
       const SizedBox(height: 24),
       DropdownButtonFormField<String>(
         value: metric,
-        decoration: const InputDecoration(labelText: 'Measurement', border: OutlineInputBorder()),
-        items: metrics.keys.map((name) => DropdownMenuItem(value: name, child: Text(name))).toList(),
+        decoration: const InputDecoration(labelText: AppLocalizations.of(context)!.measurement, border: OutlineInputBorder()),
+        items: metrics.keys.map((name) => DropdownMenuItem(value: name, child: Text(_metricLabel(context, name)))).toList(),
         onChanged: (value) => setState(() => metric = value!),
       ),
       const SizedBox(height: 12),
@@ -151,18 +168,18 @@ class _HealthHomeState extends State<HealthHome> {
         decoration: InputDecoration(labelText: 'Value (${metrics[metric]})', border: const OutlineInputBorder()),
       ),
       const SizedBox(height: 12),
-      FilledButton.icon(onPressed: _save, icon: const Icon(Icons.add), label: const Text('Save measurement')),
+      FilledButton.icon(onPressed: _save, icon: const Icon(Icons.add), label: Text(AppLocalizations.of(context)!.saveMeasurement)),
       const SizedBox(height: 24),
       Text('History (${journal.entries.length})', style: Theme.of(context).textTheme.titleLarge),
-      if (journal.entries.isEmpty) const Padding(
-        padding: EdgeInsets.symmetric(vertical: 24),
-        child: Text('No measurements yet. Add your first entry above.'),
+      if (journal.entries.isEmpty) Padding(
+        padding: const EdgeInsets.symmetric(vertical: 24),
+        child: Text(AppLocalizations.of(context)!.emptyHistory),
       ),
       ...journal.entries.map((entry) => Card(child: ListTile(
         title: Text('${entry.metric}: ${entry.value} ${entry.unit}'),
         subtitle: Text(entry.recordedAt.toLocal().toString().split('.').first),
         trailing: IconButton(
-          tooltip: 'Delete entry',
+          tooltip: AppLocalizations.of(context)!.deleteEntry,
           icon: const Icon(Icons.delete_outline),
           onPressed: () => journal.remove(entry.id),
         ),
