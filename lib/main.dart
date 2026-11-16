@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:health_universe/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 void main() => runApp(const HealthUniverseApp());
 
@@ -157,7 +157,7 @@ class _HealthHomeState extends State<HealthHome> {
       const SizedBox(height: 24),
       DropdownButtonFormField<String>(
         value: metric,
-        decoration: const InputDecoration(labelText: AppLocalizations.of(context)!.measurement, border: OutlineInputBorder()),
+        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.measurement, border: const OutlineInputBorder()),
         items: metrics.keys.map((name) => DropdownMenuItem(value: name, child: Text(_metricLabel(context, name)))).toList(),
         onChanged: (value) => setState(() => metric = value!),
       ),
@@ -165,19 +165,19 @@ class _HealthHomeState extends State<HealthHome> {
       TextField(
         controller: controller,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        decoration: InputDecoration(labelText: 'Value (${metrics[metric]})', border: const OutlineInputBorder()),
+        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.value(metrics[metric]!), border: const OutlineInputBorder()),
       ),
       const SizedBox(height: 12),
       FilledButton.icon(onPressed: _save, icon: const Icon(Icons.add), label: Text(AppLocalizations.of(context)!.saveMeasurement)),
       const SizedBox(height: 24),
-      Text('History (${journal.entries.length})', style: Theme.of(context).textTheme.titleLarge),
+      Text(AppLocalizations.of(context)!.history(journal.entries.length), style: Theme.of(context).textTheme.titleLarge),
       if (journal.entries.isEmpty) Padding(
         padding: const EdgeInsets.symmetric(vertical: 24),
         child: Text(AppLocalizations.of(context)!.emptyHistory),
       ),
       ...journal.entries.map((entry) => Card(child: ListTile(
-        title: Text('${entry.metric}: ${entry.value} ${entry.unit}'),
-        subtitle: Text(entry.recordedAt.toLocal().toString().split('.').first),
+        title: Text('${_metricLabel(context, entry.metric)}: ${NumberFormat.decimalPattern(Localizations.localeOf(context).toLanguageTag()).format(entry.value)} ${entry.unit}'),
+        subtitle: Text(DateFormat.yMd(Localizations.localeOf(context).toLanguageTag()).add_jm().format(entry.recordedAt.toLocal())),
         trailing: IconButton(
           tooltip: AppLocalizations.of(context)!.deleteEntry,
           icon: const Icon(Icons.delete_outline),
