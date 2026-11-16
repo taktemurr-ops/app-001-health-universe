@@ -37,10 +37,15 @@ class HealthJournal extends ChangeNotifier {
     if (raw == null) return;
     try {
       final parsed = jsonDecode(raw) as List<dynamic>;
+      // Decode the entire payload before changing in-memory state. A malformed
+      // item must never leave a partially restored journal in memory.
+      final restored = parsed
+          .map((item) => HealthEntry.fromJson(Map<String, dynamic>.from(item as Map)))
+          .toList()
+        ..sort((a, b) => b.recordedAt.compareTo(a.recordedAt));
       _entries
         ..clear()
-        ..addAll(parsed.map((item) => HealthEntry.fromJson(Map<String, dynamic>.from(item as Map))));
-      _entries.sort((a, b) => b.recordedAt.compareTo(a.recordedAt));
+        ..addAll(restored);
       notifyListeners();
     } catch (_) {
       // Preserve corrupt data on disk for possible recovery.
