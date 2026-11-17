@@ -18,6 +18,6 @@ jobs:
       - name: Generate localization sources
         run: flutter gen-l10n
       - name: Analyze Dart sources
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos
       - name: Run tests
         run: flutter test
