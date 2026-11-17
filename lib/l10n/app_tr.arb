@@ -29,5 +29,10 @@
         "type": "int"
       }
     }
-  }
+  },
+  "clearAll": "Tüm kayıtları sil",
+  "confirmClearTitle": "Tüm sağlık kayıtları silinsin mi?",
+  "confirmClearBody": "Bu işlem cihazdaki tüm sağlık kayıtlarını kalıcı olarak siler. Geri alınamaz.",
+  "cancel": "İptal",
+  "deleteAll": "Tümünü sil"
 }
