@@ -17,7 +17,8 @@ double? parseMeasurement(String input, String locale) {
       normalized.writeCharCode(rune - 0x0660 + 0x30);
     } else if (rune >= 0x06F0 && rune <= 0x06F9) {
       normalized.writeCharCode(rune - 0x06F0 + 0x30);
-    } else if (String.fromCharCode(rune) == separator) {
+    } else if (String.fromCharCode(rune) == separator ||
+        (locale.split(RegExp(r'[-_]')).first == 'ar' && rune == 0x066B)) {
       normalized.write('.');
     } else {
       return null;
