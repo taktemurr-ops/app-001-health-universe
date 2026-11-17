@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:health_universe/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
+import 'package:health_universe/measurement_parser.dart';
 
 void main() => runApp(const HealthUniverseApp());
 
@@ -141,7 +142,7 @@ class _HealthHomeState extends State<HealthHome> {
   }
 
   Future<void> _save() async {
-    final value = double.tryParse(controller.text.trim().replaceAll(',', '.'));
+    final value = parseMeasurement(controller.text, Localizations.localeOf(context).toLanguageTag());
     if (value == null || !value.isFinite || value <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.invalidValue)));
       return;
