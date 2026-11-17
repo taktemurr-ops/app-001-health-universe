@@ -70,6 +70,15 @@ class HealthJournal extends ChangeNotifier {
     await _persist();
   }
 
+  /// Removes all locally persisted entries. Call only after explicit user confirmation.
+  Future<void> clearAll() async {
+    final preferences = await SharedPreferences.getInstance();
+    final removed = await preferences.remove(storageKey);
+    if (!removed) throw StateError('Could not delete locally stored entries');
+    _entries.clear();
+    notifyListeners();
+  }
+
   Future<void> _persist() async {
     final preferences = await SharedPreferences.getInstance();
     await preferences.setString(storageKey, jsonEncode(_entries.map((entry) => entry.toJson()).toList()));
@@ -153,6 +162,29 @@ class _HealthHomeState extends State<HealthHome> {
     FocusScope.of(context).unfocus();
   }
 
+  Future<void> _confirmClearAll() async {
+    final l = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l.confirmClearTitle),
+        content: Text(l.confirmClearBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(l.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(l.deleteAll),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    await journal.clearAll();
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: Text(AppLocalizations.of(context)!.appTitle)),
@@ -177,6 +209,15 @@ class _HealthHomeState extends State<HealthHome> {
       FilledButton.icon(onPressed: _save, icon: const Icon(Icons.add), label: Text(AppLocalizations.of(context)!.saveMeasurement)),
       const SizedBox(height: 24),
       Text(AppLocalizations.of(context)!.history(journal.entries.length), style: Theme.of(context).textTheme.titleLarge),
+      if (journal.entries.isNotEmpty)
+        Align(
+          alignment: AlignmentDirectional.centerEnd,
+          child: TextButton.icon(
+            onPressed: _confirmClearAll,
+            icon: const Icon(Icons.delete_forever_outlined),
+            label: Text(AppLocalizations.of(context)!.clearAll),
+          ),
+        ),
       if (journal.entries.isEmpty) Padding(
         padding: const EdgeInsets.symmetric(vertical: 24),
         child: Text(AppLocalizations.of(context)!.emptyHistory),
