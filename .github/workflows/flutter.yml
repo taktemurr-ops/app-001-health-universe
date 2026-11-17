@@ -12,7 +12,8 @@ jobs:
           channel: stable
       - name: Generate Android and iOS scaffolding
         run: flutter create --platforms=android,ios .
-          rm -f test/widget_test.dart
+      - name: Remove generated starter widget test
+        run: rm -f test/widget_test.dart
       - name: Resolve dependencies
         run: flutter pub get
       - name: Generate localization sources
