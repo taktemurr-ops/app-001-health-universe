@@ -18,13 +18,27 @@ class HealthEntry {
 
   Map<String, dynamic> toJson() => {'id': id, 'recordedAt': recordedAt.toIso8601String(), 'metric': metric, 'value': value, 'unit': unit};
 
-  factory HealthEntry.fromJson(Map<String, dynamic> json) => HealthEntry(
-    id: json['id'] as String,
-    recordedAt: DateTime.parse(json['recordedAt'] as String),
-    metric: json['metric'] as String,
-    value: (json['value'] as num).toDouble(),
-    unit: json['unit'] as String,
-  );
+  factory HealthEntry.fromJson(Map<String, dynamic> json) {
+    final id = json['id'];
+    final metric = json['metric'];
+    final unit = json['unit'];
+    final rawValue = json['value'];
+    if (id is! String || id.isEmpty || metric is! String ||
+        unit is! String || rawValue is! num) {
+      throw const FormatException('Malformed health entry');
+    }
+    final value = rawValue.toDouble();
+    if (!value.isFinite || value <= 0) {
+      throw const FormatException('Invalid health measurement');
+    }
+    return HealthEntry(
+      id: id,
+      recordedAt: DateTime.parse(json['recordedAt'] as String),
+      metric: metric,
+      value: value,
+      unit: unit,
+    );
+  }
 }
 
 class HealthJournal extends ChangeNotifier {
