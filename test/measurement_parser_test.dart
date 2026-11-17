@@ -28,5 +28,8 @@ void main() {
       expect(parseMeasurement(input, 'en'), isNull, reason: input);
     }
     expect(parseMeasurement(' 3.25 ', 'en'), 3.25);
+    expect(parseMeasurement('1' * 65, 'en'), isNull);
+    expect(parseMeasurement('١' * 65, 'ar'), isNull);
+    expect(parseMeasurement('1' * 64, 'en'), isNull, reason: 'overflow must not be accepted');
   });
 }
