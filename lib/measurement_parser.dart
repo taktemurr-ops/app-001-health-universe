@@ -22,7 +22,7 @@ double? parseMeasurement(String input, String locale) {
     }
   }
   final canonical = normalized.toString();
-  if (!RegExp(r'^\\d+(?:\\.\\d+)?$').hasMatch(canonical)) return null;
+  if (!RegExp(r'^\d+(?:\.\d+)?$').hasMatch(canonical)) return null;
   final value = double.tryParse(canonical);
   return value != null && value.isFinite && value > 0 ? value : null;
 }
