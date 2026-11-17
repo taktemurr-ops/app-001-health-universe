@@ -95,7 +95,8 @@ class HealthJournal extends ChangeNotifier {
 
   Future<void> _persist() async {
     final preferences = await SharedPreferences.getInstance();
-    await preferences.setString(storageKey, jsonEncode(_entries.map((entry) => entry.toJson()).toList()));
+    final saved = await preferences.setString(storageKey, jsonEncode(_entries.map((entry) => entry.toJson()).toList()));
+    if (!saved) throw StateError('Could not persist health measurements');
   }
 }
 
