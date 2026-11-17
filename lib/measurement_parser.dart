@@ -5,7 +5,9 @@ import 'package:intl/intl.dart';
 /// Supports ASCII and Arabic-Indic decimal digits for RTL input methods.
 double? parseMeasurement(String input, String locale) {
   final text = input.trim();
-  if (text.isEmpty) return null;
+  // Bound untrusted input before normalization to avoid excessive work and
+  // unrealistic precision in a personal health measurement.
+  if (text.isEmpty || text.runes.length > 64) return null;
   final separator = NumberFormat.decimalPattern(locale).symbols.DECIMAL_SEP;
   final normalized = StringBuffer();
   for (final rune in text.runes) {
