@@ -29,5 +29,10 @@
         "type": "int"
       }
     }
-  }
+  },
+  "clearAll": "Delete all entries",
+  "confirmClearTitle": "Delete all health entries?",
+  "confirmClearBody": "This permanently removes all locally stored health entries. This cannot be undone.",
+  "cancel": "Cancel",
+  "deleteAll": "Delete all"
 }
